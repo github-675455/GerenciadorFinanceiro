@@ -1,0 +1,14 @@
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/bin/Debug/netcoreapp2.1/Gerenciador_Financeiro.deps.json
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/bin/Debug/netcoreapp2.1/Gerenciador_Financeiro.runtimeconfig.json
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/bin/Debug/netcoreapp2.1/Gerenciador_Financeiro.runtimeconfig.dev.json
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/bin/Debug/netcoreapp2.1/Gerenciador_Financeiro.dll
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/bin/Debug/netcoreapp2.1/Gerenciador_Financeiro.pdb
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.csprojAssemblyReference.cache
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.csproj.CoreCompileInputs.cache
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.RazorAssemblyInfo.cache
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.RazorAssemblyInfo.cs
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.AssemblyInfoInputs.cache
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.AssemblyInfo.cs
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.RazorTargetAssemblyInfo.cache
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.dll
+/home/alcyonjr/Ambiente/workstation.net/GerenciadorFinanceiro/Gerenciador_Financeiro/obj/Debug/netcoreapp2.1/Gerenciador_Financeiro.pdb
