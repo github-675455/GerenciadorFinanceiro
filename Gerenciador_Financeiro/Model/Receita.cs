@@ -8,16 +8,12 @@ namespace Gerenciador_Financeiro.Model
     public class Receita
     {
         [Key]
-        [Column("ID")]
         public long Id { get; set; }
-
-        [Column("DESCRICAO")]
-        [Required]
-        [MaxLength(150)]
+        
+        [Required, MinLength(5), MaxLength(150)]
         public string Descricao { get; set; }   
 
-        [Column("DATA_RECEITA")]
-        [Required]
+        [Column("DATA_RECEITA"), Required]        
         public DateTime DataReceita  { get; set; }
 
         [ForeignKey("ID_CONTA")]

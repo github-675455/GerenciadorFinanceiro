@@ -7,13 +7,10 @@ namespace Gerenciador_Financeiro.Model
     [Table("USUARIO")]
     public class Usuario
     {
-        [Key]
-        [Column("ID")]        
+        [Key]        
         public long Id { get; set; }
-
-        [Column("LOGIN")]
-        [Required]
-        [MaxLength(100)]
+                
+        [Required, MinLength(1), MaxLength(100)]
         public string Login { get; set; }   
 
         public IList<Conta> Contas  { get; set; }

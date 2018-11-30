@@ -7,17 +7,13 @@ namespace Gerenciador_Financeiro.Model
     [Table("DESPESA")]
     public class Despesa
     {
-        [Key]
-        [Column("ID")]
+        [Key]        
         public long Id { get; set; }
-
-        [Column("DESCRICAO")]
-        [Required]
-        [MaxLength(150)]
+                
+        [Required, MinLength(5), MaxLength(150)]
         public string Descricao { get; set; }   
 
-        [Column("DATA_DESPESA")]
-        [Required]
+        [Column("DATA_DESPESA"), Required]        
         public DateTime DataDespesa  { get; set; }
 
         [ForeignKey("ID_CONTA")]

@@ -7,16 +7,12 @@ namespace Gerenciador_Financeiro.Model
     [Table("CONTA")]
     public class Conta
     {
-        [Key]
-        [Column("ID")]
+        [Key]        
         public long Id { get; set; }
-        
-        [Column("NOME")]
-        [Required]
-        [MaxLength(50)]
+                
+        [Required, MinLength(1), MaxLength(150)]
         public string Nome { get; set; }   
-
-        [Column("DESCRICAO")]
+        
         [MaxLength(150)]
         public string Descricao  { get; set; }
 
@@ -24,6 +20,7 @@ namespace Gerenciador_Financeiro.Model
         public Usuario Usuario { get; set; }
         
         public IList<Receita> Receitas { get; set; }
+
         public IList<Despesa> Despesas { get; set; }
     }
 }
