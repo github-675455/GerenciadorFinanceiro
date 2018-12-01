@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Gerenciador_Financeiro.Model;
+using Gerenciador_Financeiro.Context;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -7,31 +9,63 @@ namespace Gerenciador_Financeiro.Controllers
     [ApiController]
     public class DespesaController : ControllerBase
     {        
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private readonly GerenciadorFinanceiroContext _context;
+
+        public DespesaController(GerenciadorFinanceiroContext context)
         {
-            return new string[] { "value1", "value2" };
+            _context = context;
+        }
+        
+        [HttpGet]
+        public IEnumerable<Despesa> Todos()
+        {
+            return _context.Despesas;
         }
      
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Despesa> Obter(long id)
         {
-            return "value";
+            var despesaEncontrado = _context.Despesas.Find(id);
+
+            if (despesaEncontrado == null)
+                return NotFound();
+            
+            return despesaEncontrado;
         }
 
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Novo([FromBody] Despesa despesa)
         {
+            _context.Despesas.Add(despesa);
+            _context.SaveChanges();
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public IActionResult Atualizar([FromBody] Despesa despesa)
         {
+            var despesaEncontrado = _context.Despesas.Find(despesa.Id);
+            if (despesaEncontrado == null)
+                return NotFound();
+
+            despesaEncontrado.DataDespesa = despesa.DataDespesa;
+
+            _context.Despesas.Update(despesaEncontrado);
+            _context.SaveChanges();
+            return NoContent();
         }
         
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Excluir(int id)
         {
+            var item = _context.Despesas.Find(id);
+
+            if (item == null)
+                return NotFound();
+
+            _context.Despesas.Remove(item);
+            _context.SaveChanges();
+
+            return Ok(item);
         }
     }
 }

@@ -10,10 +10,5 @@ namespace Gerenciador_Financeiro.Context
         public DbSet<Despesa> Despesas { get; set; }
         public DbSet<Receita> Receitas { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
-
-        public GerenciadorFinanceiroContext(DbContextOptions options) : base(options)
-        {
-            
-        }
     }
 }
