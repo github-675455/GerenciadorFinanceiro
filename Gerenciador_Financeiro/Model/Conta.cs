@@ -3,10 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_Financeiro.Model
-{
-    [Table("CONTA")]
+{    
     public class Conta
-    {
+    {        
         [Key]        
         public long Id { get; set; }
                 

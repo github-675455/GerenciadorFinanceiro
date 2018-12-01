@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_Financeiro.Model
-{
-    [Table("USUARIO")]
+{    
     public class Usuario
     {
         [Key]        

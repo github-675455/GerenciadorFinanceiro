@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_Financeiro.Model
-{
-    [Table("DESPESA")]
+{    
     public class Despesa
     {
         [Key]        

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Gerenciador_Financeiro.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class UsuarioController : ControllerBase
     {        
