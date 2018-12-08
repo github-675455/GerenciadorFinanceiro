@@ -6,7 +6,7 @@ namespace Gerenciador_Financeiro.Model
 {    
     public class Usuario
     {
-        [Key]        
+        [Key]
         public long Id { get; set; }
                 
         [Required, MinLength(1), MaxLength(100)]

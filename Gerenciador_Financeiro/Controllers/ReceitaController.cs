@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Gerenciador_Financeiro.Model;
+using Gerenciador_Financeiro.Context;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -7,31 +9,64 @@ namespace Gerenciador_Financeiro.Controllers
     [ApiController]
     public class ReceitaController : ControllerBase
     {        
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private readonly GerenciadorFinanceiroContext _context;
+
+        public ReceitaController(GerenciadorFinanceiroContext context)
         {
-            return new string[] { "value1", "value2" };
+            _context = context;
+        }
+        
+        [HttpGet]
+        public IEnumerable<Receita> Todos()
+        {
+            return _context.Receitas;
         }
      
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Receita> Obter(long id)
         {
-            return "value";
+            var usuarioEncontrado = _context.Receitas.Find(id);
+
+            if (usuarioEncontrado == null)
+                return NotFound();
+            
+            return usuarioEncontrado;
         }
 
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Novo([FromBody] Receita receita)
         {
+            _context.Receitas.Add(receita);
+            _context.SaveChanges();
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public IActionResult Atualizar([FromBody] Receita receita)
         {
+            var receitaEncontrada = _context.Receitas.Find(receita.Id);
+            if (receitaEncontrada == null)
+                return NotFound();
+
+            receitaEncontrada.DataReceita = receita.DataReceita;
+            receitaEncontrada.Descricao = receita.Descricao;
+
+            _context.Receitas.Update(receitaEncontrada);
+            _context.SaveChanges();
+            return NoContent();
         }
         
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Excluir(int id)
         {
+            var receitaEncontrada = _context.Receitas.Find(id);
+
+            if (receitaEncontrada == null)
+                return NotFound();
+
+            _context.Receitas.Remove(receitaEncontrada);
+            _context.SaveChanges();
+
+            return Ok(receitaEncontrada);
         }
     }
 }

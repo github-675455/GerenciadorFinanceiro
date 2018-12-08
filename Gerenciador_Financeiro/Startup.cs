@@ -40,8 +40,8 @@ namespace Gerenciador_Financeiro
             }
             else
             {
-                app.UseHsts();
-                app.UseHttpsRedirection();
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
             }
 
             app.UseMvc();
