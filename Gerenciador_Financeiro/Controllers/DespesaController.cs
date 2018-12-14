@@ -16,13 +16,13 @@ namespace Gerenciador_Financeiro.Controllers
             _context = context;
         }
         
-        [HttpGet]
+        [HttpGet("Todos")]
         public IEnumerable<Despesa> Todos()
         {
             return _context.Despesas;
         }
      
-        [HttpGet("{id}")]
+        [HttpGet("Obter/{id}")]
         public ActionResult<Despesa> Obter(long id)
         {
             var despesaEncontrado = _context.Despesas.Find(id);

@@ -9,7 +9,7 @@ namespace Gerenciador_Financeiro.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "USUARIO",
+                name: "Usuarios",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -18,11 +18,11 @@ namespace Gerenciador_Financeiro.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USUARIO", x => x.Id);
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CONTA",
+                name: "Contas",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -33,17 +33,17 @@ namespace Gerenciador_Financeiro.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CONTA", x => x.Id);
+                    table.PrimaryKey("PK_Contas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CONTA_USUARIO_ID_USUARIO",
+                        name: "FK_Contas_Usuarios_ID_USUARIO",
                         column: x => x.ID_USUARIO,
-                        principalTable: "USUARIO",
+                        principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DESPESA",
+                name: "Despesas",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -54,17 +54,17 @@ namespace Gerenciador_Financeiro.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DESPESA", x => x.Id);
+                    table.PrimaryKey("PK_Despesas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DESPESA_CONTA_ID_CONTA",
+                        name: "FK_Despesas_Contas_ID_CONTA",
                         column: x => x.ID_CONTA,
-                        principalTable: "CONTA",
+                        principalTable: "Contas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RECEITA",
+                name: "Receitas",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -75,44 +75,44 @@ namespace Gerenciador_Financeiro.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RECEITA", x => x.Id);
+                    table.PrimaryKey("PK_Receitas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RECEITA_CONTA_ID_CONTA",
+                        name: "FK_Receitas_Contas_ID_CONTA",
                         column: x => x.ID_CONTA,
-                        principalTable: "CONTA",
+                        principalTable: "Contas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CONTA_ID_USUARIO",
-                table: "CONTA",
+                name: "IX_Contas_ID_USUARIO",
+                table: "Contas",
                 column: "ID_USUARIO");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DESPESA_ID_CONTA",
-                table: "DESPESA",
+                name: "IX_Despesas_ID_CONTA",
+                table: "Despesas",
                 column: "ID_CONTA");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RECEITA_ID_CONTA",
-                table: "RECEITA",
+                name: "IX_Receitas_ID_CONTA",
+                table: "Receitas",
                 column: "ID_CONTA");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DESPESA");
+                name: "Despesas");
 
             migrationBuilder.DropTable(
-                name: "RECEITA");
+                name: "Receitas");
 
             migrationBuilder.DropTable(
-                name: "CONTA");
+                name: "Contas");
 
             migrationBuilder.DropTable(
-                name: "USUARIO");
+                name: "Usuarios");
         }
     }
 }

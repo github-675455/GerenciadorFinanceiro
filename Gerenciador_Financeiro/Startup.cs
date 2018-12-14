@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Gerenciador_Financeiro.Context;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Gerenciador_Financeiro
 {
@@ -28,7 +29,11 @@ namespace Gerenciador_Financeiro
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<GerenciadorFinanceiroContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+            mySqlOptions =>
+                    {
+                        mySqlOptions.ServerVersion(new Version(5, 7, 17), ServerType.MySql); // replace with your Server Version and Type
+                    }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,8 +45,8 @@ namespace Gerenciador_Financeiro
             }
             else
             {
-                //app.UseHsts();
-                //app.UseHttpsRedirection();
+                app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
             app.UseMvc();

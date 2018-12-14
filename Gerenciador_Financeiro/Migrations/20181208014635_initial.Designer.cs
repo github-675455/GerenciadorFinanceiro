@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_Financeiro.Migrations
 {
     [DbContext(typeof(GerenciadorFinanceiroContext))]
-    [Migration("20181201002900_initial")]
+    [Migration("20181208014635_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,7 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.HasIndex("ID_USUARIO");
 
-                    b.ToTable("CONTA");
+                    b.ToTable("Contas");
                 });
 
             modelBuilder.Entity("Gerenciador_Financeiro.Model.Despesa", b =>
@@ -58,7 +58,7 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.HasIndex("ID_CONTA");
 
-                    b.ToTable("DESPESA");
+                    b.ToTable("Despesas");
                 });
 
             modelBuilder.Entity("Gerenciador_Financeiro.Model.Receita", b =>
@@ -79,7 +79,7 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.HasIndex("ID_CONTA");
 
-                    b.ToTable("RECEITA");
+                    b.ToTable("Receitas");
                 });
 
             modelBuilder.Entity("Gerenciador_Financeiro.Model.Usuario", b =>
@@ -93,7 +93,7 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("USUARIO");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Gerenciador_Financeiro.Model.Conta", b =>
