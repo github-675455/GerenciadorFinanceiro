@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -16,13 +17,13 @@ namespace Gerenciador_Financeiro.Controllers
             _context = context;
         }
         
-        [HttpGet("Todos")]
+        [HttpGet]
         public IEnumerable<Despesa> Todos()
         {
-            return _context.Despesas;
+            return _context.Despesas.Include(e => e.Conta);
         }
      
-        [HttpGet("Obter/{id}")]
+        [HttpGet("{id}")]
         public ActionResult<Despesa> Obter(long id)
         {
             var despesaEncontrado = _context.Despesas.Find(id);
@@ -34,10 +35,17 @@ namespace Gerenciador_Financeiro.Controllers
         }
 
         [HttpPost]
-        public void Novo([FromBody] Despesa despesa)
+        public ActionResult Novo([FromBody] Despesa despesa)
         {
+            var contaEncontrado = _context.Contas.Find(despesa.Conta.Id);
+
+            if(contaEncontrado != null)
+                despesa.Conta = contaEncontrado;
+
             _context.Despesas.Add(despesa);
             _context.SaveChanges();
+
+            return NoContent();
         }
 
         [HttpPut]
