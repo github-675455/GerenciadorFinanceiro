@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_Financeiro.Model
-{    
+{
     public class Conta
     {        
         [Key]        
@@ -18,8 +18,8 @@ namespace Gerenciador_Financeiro.Model
         [ForeignKey("ID_USUARIO")]
         public Usuario Usuario { get; set; }
         
-        public IList<Receita> Receitas { get; set; }
+        public virtual IList<Receita> Receitas { get; set; }
 
-        public IList<Despesa> Despesas { get; set; }
+        public virtual IList<Despesa> Despesas { get; set; }
     }
 }
