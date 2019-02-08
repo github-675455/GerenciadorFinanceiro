@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gerenciador_Financeiro.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ContaController : ControllerBase
     {
         private readonly GerenciadorFinanceiroContext _context;
