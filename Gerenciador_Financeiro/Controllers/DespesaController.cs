@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_Financeiro.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DespesaController : ControllerBase
     {        
         private readonly GerenciadorFinanceiroContext _context;
