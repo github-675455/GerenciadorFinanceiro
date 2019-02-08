@@ -37,6 +37,13 @@ namespace Gerenciador_Financeiro
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .AddFormatterMappings()
             .AddJsonFormatters();
+
+            services.AddMvc()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            .AddJsonOptions(options => {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+
             services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
             mySqlOptions =>
                     {

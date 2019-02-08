@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -24,7 +25,9 @@ namespace Gerenciador_Financeiro.Controllers
         [HttpGet]
         public IEnumerable<Conta> Todos()
         {
-            return _context.Contas;
+            return _context.Contas
+            .Include(e => e.Despesas)
+            .Include(e => e.Receitas);
         }
      
         [HttpGet("{id}")]

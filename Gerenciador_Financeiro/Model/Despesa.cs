@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_Financeiro.Model
-{    
+{
     public class Despesa
     {
-        [Key]        
+        [Key]
         public long Id { get; set; }
                 
         [Required, MinLength(5), MaxLength(150)]
@@ -15,8 +15,8 @@ namespace Gerenciador_Financeiro.Model
         [Column("DATA_DESPESA"), Required]        
         public DateTime DataDespesa  { get; set; }
 
-        [ForeignKey("ID_CONTA")]
-        public Conta Conta { get; set; }
+        [ForeignKey("ID_CONTA"), Required]
+        public virtual Conta Conta { get; set; }
 
     }
 }
