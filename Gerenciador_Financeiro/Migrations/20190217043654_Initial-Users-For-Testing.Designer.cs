@@ -3,18 +3,20 @@ using System;
 using Gerenciador_Financeiro.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gerenciador_Financeiro.Migrations
 {
     [DbContext(typeof(GerenciadorFinanceiroContext))]
-    partial class GerenciadorFinanceiroContextModelSnapshot : ModelSnapshot
+    [Migration("20190217043654_Initial-Users-For-Testing")]
+    partial class InitialUsersForTesting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Gerenciador_Financeiro.Model.Conta", b =>
@@ -33,8 +35,10 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ID_USUARIO", "Nome")
+                    b.HasIndex("Descricao")
                         .IsUnique();
+
+                    b.HasIndex("ID_USUARIO");
 
                     b.ToTable("Contas");
                 });
@@ -52,8 +56,6 @@ namespace Gerenciador_Financeiro.Migrations
                         .HasMaxLength(150);
 
                     b.Property<long>("ID_CONTA");
-
-                    b.Property<decimal>("Valor");
 
                     b.HasKey("Id");
 
@@ -75,8 +77,6 @@ namespace Gerenciador_Financeiro.Migrations
                         .HasMaxLength(150);
 
                     b.Property<long?>("ID_CONTA");
-
-                    b.Property<decimal>("Valor");
 
                     b.HasKey("Id");
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Gerenciador_Financeiro.Model
 {
@@ -15,7 +16,7 @@ namespace Gerenciador_Financeiro.Model
         [MaxLength(150)]
         public string Descricao  { get; set; }
 
-        [ForeignKey("ID_USUARIO")]
+        [ForeignKey("ID_USUARIO"), JsonIgnore]
         public Usuario Usuario { get; set; }
         
         public virtual IList<Receita> Receitas { get; set; }
