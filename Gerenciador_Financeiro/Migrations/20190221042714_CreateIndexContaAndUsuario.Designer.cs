@@ -3,14 +3,16 @@ using System;
 using Gerenciador_Financeiro.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gerenciador_Financeiro.Migrations
 {
     [DbContext(typeof(GerenciadorFinanceiroContext))]
-    partial class GerenciadorFinanceiroContextModelSnapshot : ModelSnapshot
+    [Migration("20190221042714_CreateIndexContaAndUsuario")]
+    partial class CreateIndexContaAndUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,8 +55,6 @@ namespace Gerenciador_Financeiro.Migrations
 
                     b.Property<long>("ID_CONTA");
 
-                    b.Property<decimal>("Valor");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ID_CONTA");
@@ -75,8 +75,6 @@ namespace Gerenciador_Financeiro.Migrations
                         .HasMaxLength(150);
 
                     b.Property<long?>("ID_CONTA");
-
-                    b.Property<decimal>("Valor");
 
                     b.HasKey("Id");
 

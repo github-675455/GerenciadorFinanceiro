@@ -7,6 +7,11 @@ using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Gerenciador_Financeiro.Model.DTO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Security.Claims;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -16,65 +21,106 @@ namespace Gerenciador_Financeiro.Controllers
     public class ContaController : ControllerBase
     {
         private readonly GerenciadorFinanceiroContext _context;
+        private readonly IMapper _mapper;
 
-        public ContaController(GerenciadorFinanceiroContext context)
+        public ContaController(GerenciadorFinanceiroContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         
         [HttpGet]
-        public IEnumerable<Conta> Todos()
+        public async Task<IList<Conta>> Todos()
         {
-            return _context.Contas
+            var usuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuario);
+
+            return await _context.Contas
+            .Where(e => e.Usuario == usuarioEncontrado)
             .Include(e => e.Despesas)
-            .Include(e => e.Receitas);
+            .Include(e => e.Receitas)
+            .ToListAsync();
         }
      
         [HttpGet("{id}")]
-        public ActionResult<Usuario> Obter(long id)
+        public async Task<ActionResult<Usuario>> Obter(long id)
         {
-            var contaEncontrado = _context.Contas.Find(id);
+            var usuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuario);            
 
-            if (contaEncontrado == null)
+            var contaEncontrada = await _context.Contas.FindAsync(id);
+
+            if(contaEncontrada.Usuario != usuarioEncontrado)
+                return Forbid();
+
+            if (contaEncontrada == null)
                 return NotFound();
             
-            return Ok(contaEncontrado);
+            return Ok(contaEncontrada);
         }
 
         [HttpPost]
-        public void Novo([FromBody] Conta conta)
+        public async Task<IActionResult> Nova([FromBody] ContaDto contaInformada)
         {
-            _context.Contas.Add(conta);
+            var usuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuario);
+
+            var contaEncontrada = await _context.Contas.FirstOrDefaultAsync(e => e.Descricao == contaInformada.Descricao && e.Usuario == usuarioEncontrado);
+
+            if(contaEncontrada != null)
+                return Conflict();
+
+            var novaConta = _mapper.Map<Conta>(contaInformada);
+
+            novaConta.Usuario = usuarioEncontrado;
+
+            _context.Contas.Add(novaConta);
             _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpPut]
-        public IActionResult Atualizar([FromBody] Conta conta)
+        public async Task<IActionResult> Atualizar([FromBody] Conta conta)
         {
-            var contaEncontrado = _context.Contas.Find(conta.Id);
-            if (contaEncontrado == null)
+            var usuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuario);
+
+            var contaEncontrada = await _context.Contas.FindAsync(conta.Id);
+
+            if(contaEncontrada.Usuario != usuarioEncontrado)
+                return Forbid();
+
+            if (contaEncontrada == null)
                 return NotFound();
 
-            contaEncontrado.Nome = conta.Nome;
-            contaEncontrado.Descricao = conta.Descricao;
+            contaEncontrada.Nome = conta.Nome;
+            contaEncontrada.Descricao = conta.Descricao;
 
-            _context.Contas.Update(contaEncontrado);
-            _context.SaveChanges();
-            return NoContent();
+            _context.Contas.Update(contaEncontrada);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
         
         [HttpDelete("{id}")]
-        public IActionResult Excluir(int id)
+        public async Task<IActionResult> Excluir(int id)
         {
-            var item = _context.Contas.Find(id);
+            var usuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuario);
 
-            if (item == null)
+            var contaEncontrada = await _context.Contas.FindAsync(id);
+
+            if(contaEncontrada.Usuario != usuarioEncontrado)
+                return Forbid();
+
+            if (contaEncontrada == null)
                 return NotFound();
 
-            _context.Contas.Remove(item);
-            _context.SaveChanges();
+            _context.Contas.Remove(contaEncontrada);
+            await _context.SaveChangesAsync();
 
-            return Ok(item);
+            return Ok(contaEncontrada);
         }
     }
 }

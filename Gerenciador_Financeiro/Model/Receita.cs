@@ -15,6 +15,8 @@ namespace Gerenciador_Financeiro.Model
         [Column("DATA_RECEITA"), Required]        
         public DateTime DataReceita  { get; set; }
 
+        public Decimal Valor  { get; set; }
+
         [ForeignKey("ID_CONTA")]
         public Conta Conta { get; set; }
 

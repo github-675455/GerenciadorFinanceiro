@@ -3,14 +3,16 @@ using System;
 using Gerenciador_Financeiro.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gerenciador_Financeiro.Migrations
 {
     [DbContext(typeof(GerenciadorFinanceiroContext))]
-    partial class GerenciadorFinanceiroContextModelSnapshot : ModelSnapshot
+    [Migration("20190221050630_CreateValor")]
+    partial class CreateValor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

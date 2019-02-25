@@ -4,6 +4,11 @@ using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Gerenciador_Financeiro.Interfaces;
+using System.Threading.Tasks;
+using System.Linq;
+using AutoMapper;
+using Gerenciador_Financeiro.Model.DTO;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -13,69 +18,109 @@ namespace Gerenciador_Financeiro.Controllers
     public class DespesaController : ControllerBase
     {        
         private readonly GerenciadorFinanceiroContext _context;
+        private readonly IMapper _mapper;
+        private readonly IUsuarioService _usuarioService;
 
-        public DespesaController(GerenciadorFinanceiroContext context)
+        public DespesaController(GerenciadorFinanceiroContext context, IMapper mapper, IUsuarioService usuarioService)
         {
             _context = context;
+            _mapper = mapper;
+            _usuarioService = usuarioService;
         }
         
         [HttpGet]
-        public IEnumerable<Despesa> Todos()
+        public  async Task<IList<Despesa>> Todas()
         {
-            return _context.Despesas.Include(e => e.Conta);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+            
+            return await _context.Despesas
+            .Where(e => e.Conta.Usuario == usuarioEncontrado)
+            .Include(e => e.Conta)
+            .ToListAsync();
         }
      
         [HttpGet("{id}")]
-        public ActionResult<Despesa> Obter(long id)
+        public async Task<ActionResult<Despesa>> Obter(long id)
         {
-            var despesaEncontrado = _context.Despesas.Find(id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
 
-            if (despesaEncontrado == null)
+            var despesaEncontrada = await _context.Despesas.FirstOrDefaultAsync(e => e.Id == id && e.Conta.Usuario == usuarioEncontrado);
+
+            if (despesaEncontrada == null)
                 return NotFound();
             
-            return despesaEncontrado;
+            return despesaEncontrada;
         }
 
         [HttpPost]
-        public ActionResult Novo([FromBody] Despesa despesa)
+        public async Task<ActionResult<Despesa>> Novo([FromBody] DespesaDto despesaInformada)
         {
-            var contaEncontrado = _context.Contas.Find(despesa.Conta.Id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+            
+            var despesaEncontrada = await _context.Despesas.FirstOrDefaultAsync(e => e.Descricao == despesaInformada.Descricao && e.Conta.Usuario == usuarioEncontrado);
 
-            if(contaEncontrado != null)
-                despesa.Conta = contaEncontrado;
+            if(despesaEncontrada != null)
+                return Conflict();
 
-            _context.Despesas.Add(despesa);
-            _context.SaveChanges();
+            if(despesaInformada.Conta == null || despesaInformada.Conta.Id == 0)
+                return BadRequest();
 
-            return NoContent();
+            var contaEncontrada = await _context.Contas.FirstOrDefaultAsync(e => e.Id == despesaInformada.Conta.Id && e.Usuario == usuarioEncontrado);
+            
+            if(contaEncontrada == null)
+                return NotFound();
+
+            var novaDespesa = _mapper.Map<Despesa>(despesaInformada);
+
+            if(contaEncontrada != null)
+                novaDespesa.Conta = contaEncontrada;
+
+            _context.Despesas.Add(novaDespesa);
+            await _context.SaveChangesAsync();
+
+            return Ok(novaDespesa);
         }
 
         [HttpPut]
-        public IActionResult Atualizar([FromBody] Despesa despesa)
+        public async Task<IActionResult> Atualizar([FromBody] Despesa despesa)
         {
-            var despesaEncontrado = _context.Despesas.Find(despesa.Id);
-            if (despesaEncontrado == null)
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+
+            var despesaEncontrada = await _context.Despesas.FirstOrDefaultAsync(e => e.Id == despesa.Id && e.Conta.Usuario == usuarioEncontrado);
+            if (despesaEncontrada == null)
                 return NotFound();
 
-            despesaEncontrado.DataDespesa = despesa.DataDespesa;
+            despesaEncontrada.DataDespesa = despesa.DataDespesa;
+            despesaEncontrada.Descricao = despesa.Descricao;
+            despesaEncontrada.Valor = despesa.Valor;
 
-            _context.Despesas.Update(despesaEncontrado);
-            _context.SaveChanges();
-            return NoContent();
+            var contaEncontrado = await _context.Contas.FirstOrDefaultAsync(e => e.Id == despesa.Conta.Id && e.Usuario == usuarioEncontrado);
+
+            if(contaEncontrado == null)
+                return NotFound();
+
+            despesaEncontrada.Conta = contaEncontrado;
+
+            _context.Despesas.Update(despesaEncontrada);
+            await _context.SaveChangesAsync();
+
+            return Ok(despesaEncontrada);
         }
         
         [HttpDelete("{id}")]
-        public IActionResult Excluir(int id)
+        public async Task<IActionResult> Excluir(int id)
         {
-            var item = _context.Despesas.Find(id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
 
-            if (item == null)
+            var despesaEncontrada = await _context.Despesas.FirstOrDefaultAsync(e => e.Id == id && e.Conta.Usuario == usuarioEncontrado);
+
+            if (despesaEncontrada == null)
                 return NotFound();
 
-            _context.Despesas.Remove(item);
-            _context.SaveChanges();
+            _context.Despesas.Remove(despesaEncontrada);
+            await _context.SaveChangesAsync();
 
-            return Ok(item);
+            return Ok();
         }
     }
 }

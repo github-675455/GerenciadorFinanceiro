@@ -2,23 +2,18 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Gerenciador_Financeiro.Model
+namespace Gerenciador_Financeiro.Model.DTO
 {
-    public class Despesa
-    {
-        [Key]
-        public long Id { get; set; }
-                
+    public class ReceitaDto
+    {           
         [Required, MinLength(5), MaxLength(150)]
         public string Descricao { get; set; }   
 
-        [Column("DATA_DESPESA"), Required]        
         public DateTime DataDespesa  { get; set; }
 
         public Decimal Valor  { get; set; }
 
-        [ForeignKey("ID_CONTA"), Required]
+        [Required]
         public virtual Conta Conta { get; set; }
-
     }
 }

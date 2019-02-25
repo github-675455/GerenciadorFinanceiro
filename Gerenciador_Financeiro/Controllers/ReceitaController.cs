@@ -4,6 +4,12 @@ using Gerenciador_Financeiro.Model;
 using Gerenciador_Financeiro.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Linq;
+using System.Threading.Tasks;
+using Gerenciador_Financeiro.Model.DTO;
+using AutoMapper;
+using Gerenciador_Financeiro.Interfaces;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -13,52 +19,83 @@ namespace Gerenciador_Financeiro.Controllers
     public class ReceitaController : ControllerBase
     {        
         private readonly GerenciadorFinanceiroContext _context;
+        private readonly IMapper _mapper;
+        private readonly IUsuarioService _usuarioService;
 
-        public ReceitaController(GerenciadorFinanceiroContext context)
+        public ReceitaController(GerenciadorFinanceiroContext context, IMapper mapper, IUsuarioService usuarioService)
         {
             _context = context;
+            _mapper = mapper;
+            _usuarioService = usuarioService;
         }
         
         [HttpGet]
-        public IEnumerable<Receita> Todos()
+        public async Task<IList<Receita>> Todos()
         {
-            return _context.Receitas.Include(e => e.Conta);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+
+            return await _context.Receitas
+            .Where(e => e.Conta.Usuario == usuarioEncontrado)
+            .Include(e => e.Conta)
+            .ToListAsync();
         }
      
         [HttpGet("{id}")]
-        public ActionResult<Receita> Obter(long id)
+        public async Task<ActionResult<Receita>> Obter(long id)
         {
-            var usuarioEncontrado = _context.Receitas.Find(id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
 
-            if (usuarioEncontrado == null)
+            var receitaEncontrada = await _context.Receitas.FirstOrDefaultAsync(e => e.Id == id && e.Conta.Usuario == usuarioEncontrado);
+
+            if (receitaEncontrada == null)
                 return NotFound();
             
-            return usuarioEncontrado;
+            return receitaEncontrada;
         }
 
         [HttpPost]
-        public void Novo([FromBody] Receita receita)
+        public async Task<ActionResult<Receita>> Novo([FromBody] ReceitaDto receitaInformada)
         {
-            var contaEncontrado = _context.Contas.Find(receita.Conta.Id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+            
+            var receitaEncontrada = await _context.Receitas.FirstOrDefaultAsync(e => e.Descricao == receitaInformada.Descricao && e.Conta.Usuario != usuarioEncontrado);
 
-            if(contaEncontrado != null)
-                receita.Conta = contaEncontrado;
+            if(receitaEncontrada != null)
+                return Conflict();
 
-            _context.Receitas.Add(receita);
-            _context.SaveChanges();
+            if(receitaInformada.Conta == null || receitaInformada.Conta.Id == 0)
+                return BadRequest();
+
+            var contaEncontrada = await _context.Contas.FirstOrDefaultAsync(e => e.Id == receitaInformada.Conta.Id && e.Usuario == usuarioEncontrado);
+
+            if(contaEncontrada == null)
+                return NotFound();
+            
+            var novaReceita = _mapper.Map<Receita>(receitaInformada);
+
+            if(contaEncontrada != null)
+                novaReceita.Conta = contaEncontrada;
+
+            _context.Receitas.Add(novaReceita);
+            await _context.SaveChangesAsync();
+
+            return Ok(novaReceita);
         }
 
         [HttpPut]
-        public IActionResult Atualizar([FromBody] Receita receita)
+        public async Task<IActionResult> Atualizar([FromBody] Receita receita)
         {
-            var receitaEncontrada = _context.Receitas.Find(receita.Id);
+            var usuarioAutenticado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+
+            var receitaEncontrada = await _context.Receitas.FirstOrDefaultAsync(e => e.Id == receita.Id && e.Conta.Usuario == usuarioAutenticado);
             if (receitaEncontrada == null)
                 return NotFound();
 
             receitaEncontrada.DataReceita = receita.DataReceita;
             receitaEncontrada.Descricao = receita.Descricao;
+            receitaEncontrada.Valor = receita.Valor;
 
-            var contaEncontrado = _context.Contas.Find(receita.Conta.Id);
+            var contaEncontrado = await _context.Contas.FirstOrDefaultAsync(e => e.Id == receita.Conta.Id && e.Usuario == usuarioAutenticado);
 
             if(contaEncontrado == null)
                 return NotFound();
@@ -66,22 +103,25 @@ namespace Gerenciador_Financeiro.Controllers
             receitaEncontrada.Conta = contaEncontrado;
 
             _context.Receitas.Update(receitaEncontrada);
-            _context.SaveChanges();
-            return NoContent();
+            await _context.SaveChangesAsync();
+
+            return Ok(receitaEncontrada);
         }
         
         [HttpDelete("{id}")]
-        public IActionResult Excluir(int id)
+        public async Task<IActionResult> Excluir(int id)
         {
-            var receitaEncontrada = _context.Receitas.Find(id);
+            var usuarioEncontrado = await _usuarioService.GetUsuarioFromJwtAsync(User);
+
+            var receitaEncontrada = await _context.Receitas.FirstOrDefaultAsync(e => e.Id == id && e.Conta.Usuario == usuarioEncontrado);
 
             if (receitaEncontrada == null)
                 return NotFound();
 
             _context.Receitas.Remove(receitaEncontrada);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return Ok(receitaEncontrada);
+            return Ok();
         }
     }
 }
