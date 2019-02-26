@@ -1,15 +1,17 @@
 FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
 EXPOSE 80
+ENV APP_CONFIGURATION=Release
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
 COPY . .
 RUN dotnet restore
-RUN dotnet build -c Release -o /app
+RUN dotnet build -c ${APP_CONFIGURATION} -o /app
 
 FROM build AS publish
-RUN dotnet publish -c Release -o /app
+RUN dotnet publish -c ${APP_CONFIGURATION} -o /app
 
 FROM base AS final
 WORKDIR /app
