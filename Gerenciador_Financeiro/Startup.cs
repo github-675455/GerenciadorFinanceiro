@@ -32,7 +32,12 @@ namespace Gerenciador_Financeiro
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration) 
+        {
+            this.Configuration = configuration;
+               
+        }
+                public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -61,10 +66,14 @@ namespace Gerenciador_Financeiro
 
             services.AddTransient<IUsuarioService, UsuarioService>();
 
-            services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+            var defaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
+
+            defaultConnection = String.IsNullOrEmpty(defaultConnection) ? Configuration.GetConnectionString("DefaultConnection") : defaultConnection;
+
+            services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(defaultConnection,
             mySqlOptions =>
             {
-                mySqlOptions.ServerVersion(new Version(5, 7, 17), ServerType.MySql); // replace with your Server Version and Type
+                mySqlOptions.ServerVersion(new Version(5, 7, 17), ServerType.MySql);
             }));
 
             services.AddAuthentication(options => {
