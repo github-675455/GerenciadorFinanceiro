@@ -45,6 +45,8 @@ namespace Gerenciador_Financeiro
                     .AllowCredentials();
             }));
 
+            services.AddHealthChecks();
+
             services.AddMvcCore()
             .AddAuthorization()
             .SetCompatibilityVersion(CompatibilityVersion.Latest)
@@ -115,6 +117,8 @@ namespace Gerenciador_Financeiro
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, GerenciadorFinanceiroContext context)
         {
             context.Database.Migrate();
+
+            app.UseHealthChecks("/health");
 
             if (env.IsDevelopment())
             {
