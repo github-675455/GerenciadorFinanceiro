@@ -45,8 +45,6 @@ namespace Gerenciador_Financeiro
                     .AllowCredentials();
             }));
 
-            services.AddHealthChecks();
-
             services.AddMvcCore()
             .AddAuthorization()
             .SetCompatibilityVersion(CompatibilityVersion.Latest)
@@ -65,6 +63,9 @@ namespace Gerenciador_Financeiro
             var defaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
 
             defaultConnection = String.IsNullOrEmpty(defaultConnection) ? Configuration.GetConnectionString("DefaultConnection") : defaultConnection;
+
+            services.AddHealthChecks()
+            .AddMySql(defaultConnection);
 
             services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(defaultConnection,
             mySqlOptions =>
