@@ -82,7 +82,7 @@ namespace Gerenciador_Financeiro
             services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(defaultConnection,
             mySqlOptions =>
             {
-                mySqlOptions.ServerVersion(new Version(5, 7, 17), ServerType.MySql);
+                mySqlOptions.ServerVersion(new Version(8, 0, 5), ServerType.MySql);
             }));
 
             services.AddAuthentication(options => {
