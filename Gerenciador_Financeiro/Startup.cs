@@ -22,6 +22,8 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using System.Diagnostics;
 using Gerenciador_Financeiro.Services;
 using Gerenciador_Financeiro.Interfaces;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Http;
 
 namespace Gerenciador_Financeiro
 {
@@ -36,14 +38,24 @@ namespace Gerenciador_Financeiro
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            {
+            services.AddCors(config => {
+                config.AddPolicy("MyPolicy", builder =>
+                {
                     builder
                     .AllowAnyOrigin() 
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
-            }));
+                });
+                config.AddPolicy("MyProductionPolicy", builder =>
+                {
+                    builder
+                    .WithOrigins(Configuration.GetSection("CorsOrigins").Get<string>()) 
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                });
+            });
 
             services.AddMvcCore()
             .AddAuthorization()
@@ -67,6 +79,10 @@ namespace Gerenciador_Financeiro
             services.AddHealthChecks()
             .AddMySql(defaultConnection);
 
+            services.AddAntiforgery(options => {
+                options.HeaderName = "X-XSRF-TOKEN";
+            });
+
             services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(defaultConnection,
             mySqlOptions =>
             {
@@ -83,10 +99,18 @@ namespace Gerenciador_Financeiro
                 if(secret == null)
                     secret = "test secret key, please change it";
                 
+                var authority = Environment.GetEnvironmentVariable("JwtAuthority");
+                if(authority == null)
+                    authority = Configuration.GetValue<String>("JwtAuthority");
+                
+                var audience = Environment.GetEnvironmentVariable("JwtAudience");
+                if(audience == null)
+                    audience = Configuration.GetValue<String>("JwtAudience");
+
                 jwtBearerOptions.Configuration = new OpenIdConnectConfiguration();
 
-                jwtBearerOptions.Audience = "http://localhost:5000/";
-                jwtBearerOptions.Authority = "http://localhost:5000/";
+                jwtBearerOptions.Audience = audience;
+                jwtBearerOptions.Authority = authority;
                 jwtBearerOptions.RequireHttpsMetadata = false;
 
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
@@ -121,6 +145,24 @@ namespace Gerenciador_Financeiro
 
             app.UseHealthChecks("/health");
 
+            app.Use(next => nextContext =>
+            {
+                // TODO: Add if conditions to ensure the cookies
+                // are only sent to our trusted domains
+
+                var antiforgery = nextContext.RequestServices.GetService<IAntiforgery>();
+
+                // Send the token as a javascript readable token
+                var tokens = antiforgery.GetAndStoreTokens(nextContext);
+                nextContext.Response.Cookies.Append(
+                    "XSRF-TOKEN", 
+                    tokens.RequestToken, 
+                    new CookieOptions() { HttpOnly = false }
+                );
+
+                return next(nextContext);
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseCors("MyPolicy");
@@ -128,8 +170,7 @@ namespace Gerenciador_Financeiro
             }
             else
             {
-                app.UseHsts();
-                app.UseHttpsRedirection();
+                app.UseCors("MyProductionPolicy");
             }
 
             app.UseAuthentication();
