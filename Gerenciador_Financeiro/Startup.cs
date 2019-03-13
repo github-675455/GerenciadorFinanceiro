@@ -79,10 +79,6 @@ namespace Gerenciador_Financeiro
             services.AddHealthChecks()
             .AddMySql(defaultConnection);
 
-            services.AddAntiforgery(options => {
-                options.HeaderName = "X-XSRF-TOKEN";
-            });
-
             services.AddDbContextPool<GerenciadorFinanceiroContext>(options => options.UseMySql(defaultConnection,
             mySqlOptions =>
             {
@@ -144,24 +140,6 @@ namespace Gerenciador_Financeiro
             context.Database.Migrate();
 
             app.UseHealthChecks("/health");
-
-            app.Use(next => nextContext =>
-            {
-                // TODO: Add if conditions to ensure the cookies
-                // are only sent to our trusted domains
-
-                var antiforgery = nextContext.RequestServices.GetService<IAntiforgery>();
-
-                // Send the token as a javascript readable token
-                var tokens = antiforgery.GetAndStoreTokens(nextContext);
-                nextContext.Response.Cookies.Append(
-                    "XSRF-TOKEN", 
-                    tokens.RequestToken, 
-                    new CookieOptions() { HttpOnly = false }
-                );
-
-                return next(nextContext);
-            });
 
             if (env.IsDevelopment())
             {
