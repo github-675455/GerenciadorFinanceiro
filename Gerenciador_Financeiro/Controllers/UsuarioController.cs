@@ -79,9 +79,9 @@ namespace Gerenciador_Financeiro.Controllers
 
             return Ok(new
             {
-                token_type = "Bearer",
-                access_token = accessToken.WriteToken(token),
-                expires_in = expiraEmSegundos
+                tokenType = "Bearer",
+                accessToken = accessToken.WriteToken(token),
+                expiresIn = expiraEmSegundos
             });
         }
 
