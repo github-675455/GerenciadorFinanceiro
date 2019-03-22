@@ -6,7 +6,7 @@ namespace Gerenciador_Financeiro
 {
     public class Utils
     {
-        public static byte[] hashPassword(string password, byte[] salt){
+        public static byte[] hashWithSalt(string password, byte[] salt){
             return KeyDerivation.Pbkdf2(
             password: password,
             salt: salt,

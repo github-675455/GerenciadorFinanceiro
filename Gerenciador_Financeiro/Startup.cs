@@ -61,6 +61,8 @@ namespace Gerenciador_Financeiro
                 });
             });
 
+            services.AddSingleton<IConfiguration>(Configuration);
+
             services.AddMvcCore()
             .AddAuthorization()
             .SetCompatibilityVersion(CompatibilityVersion.Latest)

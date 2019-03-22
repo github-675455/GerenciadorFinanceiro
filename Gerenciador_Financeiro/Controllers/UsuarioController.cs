@@ -14,6 +14,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Gerenciador_Financeiro.Interfaces;
+using Gerenciador_Financeiro.Model.DTO.Response;
 
 namespace Gerenciador_Financeiro.Controllers
 {
@@ -35,54 +36,9 @@ namespace Gerenciador_Financeiro.Controllers
 
         [HttpPost("autenticar")]
         [AllowAnonymous]
-        public async Task<IActionResult> Autenticar([FromBody] UsuarioDto usuarioInformado)
+        public async Task<UsuarioDtoResponse> Autenticar([FromBody] UsuarioDto usuarioInformado)
         {
-            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuarioInformado.Login);
-
-            if(usuarioEncontrado == null)
-                return NotFound();
-
-            var senhaInformadaComputada = Utils.hashPassword(usuarioInformado.Senha, usuarioEncontrado.Salt);
-
-            if(!senhaInformadaComputada.SequenceEqual(usuarioEncontrado.Senha))
-            {
-                return Unauthorized();
-            }
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, usuarioInformado.Login),
-                new Claim(JwtRegisteredClaimNames.Jti, usuarioEncontrado.Id.ToString())
-            };
-            var secret = Environment.GetEnvironmentVariable("appsecretkey");
-            if (secret == null)
-                secret = "test secret key, please change it";
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-            var now = DateTime.UtcNow;
-
-            const double expiraEmSegundos = 600;
-
-            var expires = now.AddSeconds(expiraEmSegundos);
-
-            var token = new JwtSecurityToken(
-                issuer: "backend-gerenciador-financeiro",
-                audience: "frontend-gerenciador-financeiro",
-                claims: claims,
-                notBefore: now,
-                expires: expires,
-                signingCredentials: creds);
-
-            var accessToken = new JwtSecurityTokenHandler();
-
-            return Ok(new
-            {
-                tokenType = "Bearer",
-                accessToken = accessToken.WriteToken(token),
-                expiresIn = expiraEmSegundos
-            });
+            return await _usuarioService.LoginAsync(usuarioInformado);
         }
 
         [HttpGet("{id}")]
@@ -110,7 +66,7 @@ namespace Gerenciador_Financeiro.Controllers
             byte[] salt = Utils.gerarRandomSalt();
 
             novoUsuario.Salt = salt;
-            novoUsuario.Senha = Utils.hashPassword(usuarioInformado.Senha, salt);
+            novoUsuario.Senha = Utils.hashWithSalt(usuarioInformado.Senha, salt);
 
             _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
