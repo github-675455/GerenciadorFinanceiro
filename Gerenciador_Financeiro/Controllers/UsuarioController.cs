@@ -56,7 +56,7 @@ namespace Gerenciador_Financeiro.Controllers
         [HttpPost("novo")]
         public async Task<IActionResult> Novo([FromBody] UsuarioDto usuarioInformado)
         {
-            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuarioInformado.Login);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuarioInformado.login);
 
             if(usuarioEncontrado != null)
                 return Conflict();
@@ -66,7 +66,7 @@ namespace Gerenciador_Financeiro.Controllers
             byte[] salt = Utils.gerarRandomSalt();
 
             novoUsuario.Salt = salt;
-            novoUsuario.Senha = Utils.hashWithSalt(usuarioInformado.Senha, salt);
+            novoUsuario.Senha = Utils.hashWithSalt(usuarioInformado.senha, salt);
 
             _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
