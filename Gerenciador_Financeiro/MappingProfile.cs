@@ -11,7 +11,7 @@ namespace Gerenciador_Financeiro
             CreateMap<DespesaDto, Despesa>();
             CreateMap<ReceitaDto, Receita>();
             CreateMap<UsuarioDto, Usuario>()
-            .ForMember(destination => destination.Senha, options => options.MapFrom(source => Encoding.UTF8.GetBytes(source.Senha)));
+            .ForMember(destination => destination.Senha, options => options.MapFrom(source => Encoding.UTF8.GetBytes(source.senha)));
         }
     }
 }

@@ -39,18 +39,18 @@ namespace Gerenciador_Financeiro.Services
             var issuer = _configuration["Issuer"];
             var audience = _configuration["Audience"];
 
-            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuarioInformado.Login);
+            var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(e => e.Login == usuarioInformado.login);
 
             if (usuarioEncontrado == null){
-                usuarioResponse.Errors.Add(new Error(404, "Usuário não encontrado"));
+                usuarioResponse.Errors.Add(new Error(404, nameof(usuarioInformado.login), "Usuário não encontrado"));
                 return usuarioResponse;
             }
 
-            var senhaInformadaComputada = Utils.hashWithSalt(usuarioInformado.Senha, usuarioEncontrado.Salt);
+            var senhaInformadaComputada = Utils.hashWithSalt(usuarioInformado.senha, usuarioEncontrado.Salt);
 
             if (!senhaInformadaComputada.SequenceEqual(usuarioEncontrado.Senha))
             {
-                usuarioResponse.Errors.Add(new Error(401, "Senha incorreta"));
+                usuarioResponse.Errors.Add(new Error(401, nameof(usuarioInformado.senha), "Senha incorreta"));
             }
 
             if(usuarioResponse.Errors.Any())
@@ -58,7 +58,7 @@ namespace Gerenciador_Financeiro.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, usuarioInformado.Login),
+                new Claim(JwtRegisteredClaimNames.Sub, usuarioInformado.login),
                 new Claim(JwtRegisteredClaimNames.Jti, usuarioEncontrado.Id.ToString())
             };
             var secret = Environment.GetEnvironmentVariable("appsecretkey");
